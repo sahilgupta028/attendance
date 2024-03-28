@@ -8,25 +8,14 @@ const page = () => {
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Login</h2>
         <form className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-semibold text-gray-800">
-              Name
+            <label htmlFor="rollnumber" className="block text-sm font-semibold text-gray-800">
+              Roll Number
             </label>
             <input
-              type="text"
-              id="name"
+              type="number"
+              id="rollnumber"
               className="w-full p-3 border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 transition duration-300"
-              placeholder="Enter your Name"
-            />
-          </div>
-          <div>
-            <label htmlFor="username" className="block text-sm font-semibold text-gray-800">
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              className="w-full p-3 border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 transition duration-300"
-              placeholder="Enter your username"
+              placeholder="Enter your Roll Number"
             />
           </div>
           <div>

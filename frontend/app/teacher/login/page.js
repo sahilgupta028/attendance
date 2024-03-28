@@ -15,7 +15,7 @@ const page = () => {
               type="text"
               id="username"
               className="w-full p-3 border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 transition duration-300"
-              placeholder="Enter your username"
+              placeholder="Enter your Username"
             />
           </div>
           <div>
@@ -37,7 +37,7 @@ const page = () => {
           </button>
         </form>
         <div className="flex justify-center items-center mt-4">
-          <p className="text-sm text-gray-800">Not a Student?</p>
+          <p className="text-sm text-gray-800">Not a Teacher?</p>
           <Link href="/teacher/register">
             <button className="ml-2 text-blue-500 hover:underline">Sign-up Now</button>
           </Link>

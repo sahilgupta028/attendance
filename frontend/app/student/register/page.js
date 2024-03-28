@@ -19,14 +19,14 @@ const page = () => {
             />
           </div>
           <div>
-            <label htmlFor="username" className="block text-sm font-semibold text-gray-800">
-              Username
+            <label htmlFor="rollnumber" className="block text-sm font-semibold text-gray-800">
+              Roll Number
             </label>
             <input
               type="text"
-              id="username"
+              id="rollnumber"
               className="w-full p-3 border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 transition duration-300"
-              placeholder="Enter your username"
+              placeholder="Enter your Roll number"
             />
           </div>
           <div>
