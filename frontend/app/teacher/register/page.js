@@ -1,7 +1,47 @@
-import React from 'react'
-import Link from 'next/link'
+"use client";
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
-const page = () => {
+const Page = () => {
+  const [name, setName] = useState('');
+  const [contact, setContact] = useState('');
+  const [subject, setSubject] = useState('');
+  const [password, setPassword] = useState('');
+  const router = useRouter();
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/teacher/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, contact, subject, password }),
+      });
+
+      if (response.ok) {
+        console.log('Registration successful');
+
+        const data = await response.json();
+
+        console.log(data);
+        const token = data.token;
+
+        Cookies.set('token', token);
+        router.push('/teacher');
+      } else {
+        const data = await response.json();
+        console.error('Registration failed:', data.error || 'Unknown error');
+      }
+    } catch (error) {
+      console.error('Error during registration:', error.message || 'Unknown error');
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-500 font-mono">
       <div className="max-w-md w-full p-8 bg-white rounded-md shadow-lg">
@@ -14,19 +54,10 @@ const page = () => {
             <input
               type="text"
               id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full p-3 border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 transition duration-300"
               placeholder="Enter your Name"
-            />
-          </div>
-          <div>
-            <label htmlFor="username" className="block text-sm font-semibold text-gray-800">
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              className="w-full p-3 border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 transition duration-300"
-              placeholder="Enter your username"
             />
           </div>
           <div>
@@ -36,6 +67,8 @@ const page = () => {
             <input
               type="text"
               id="contact"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
               className="w-full p-3 border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 transition duration-300"
               placeholder="Enter your Contact"
             />
@@ -47,6 +80,8 @@ const page = () => {
             <input
               type="text"
               id="subject"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
               className="w-full p-3 border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 transition duration-300"
               placeholder="Enter your Subject"
             />
@@ -58,6 +93,8 @@ const page = () => {
             <input
               type="password"
               id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full p-3 border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 transition duration-300"
               placeholder="Enter your password"
             />
@@ -65,6 +102,7 @@ const page = () => {
           <button
             type="button"
             className="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 transition duration-300"
+            onClick={handleRegister} // Add onClick event handler
           >
             Register
           </button>
@@ -77,7 +115,7 @@ const page = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default Page;
