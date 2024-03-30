@@ -37,14 +37,12 @@ exports.loginStudent = async (req, res) => {
   const { rollnumber, password } = req.body;
 
   try {
-    // Check if the student exists in the database
     const student = await Student.findOne({ rollnumber });
 
     if (!student) {
       return res.status(404).json({ error: 'Student not found' });
     }
 
-    // Compare the provided password with the hashed password stored in the database
     const isPasswordMatch = await bcrypt.compare(password, student.password);
 
     if (!isPasswordMatch) {
@@ -55,5 +53,15 @@ exports.loginStudent = async (req, res) => {
   } catch (error) {
     console.error('Error during login:', error.message);
     res.status(500).json({ error: 'Server error' });
+  }
+};
+
+exports.profileStudent = async (req, res) => {
+  try {
+    const profile = await Student.findOne({ rollnumber: req.params.rollnumber });
+    console.log(req.params);
+    res.json(profile);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

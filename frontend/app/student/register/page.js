@@ -8,7 +8,9 @@ const Page = () => {
   const [rollnumber, setRollnumber] = useState('');
   const [studentClass, setStudentClass] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter(); 
+  const router = useRouter();
+  
+  const [error, setError] = useState(null);
 
   const handleRegister = async (e) => {
     e.preventDefault(); 
@@ -29,13 +31,16 @@ const Page = () => {
 
       if (response.ok) {
         console.log('Registration successful');
+        localStorage.setItem('rollnumber', rollnumber);
         router.push('/student');
       } else {
         const data = await response.json();
         console.error('Registration failed:', data.error || 'Unknown error');
+        setError(data.error || 'Unknown error');
       }
     } catch (error) {
       console.error('Error during registration:', error.message || 'Unknown error');
+      setError(error.message || 'Unknown error');
     }
   };
 
@@ -103,6 +108,7 @@ const Page = () => {
           >
             Register
           </button>
+          {error && <p className="text-red-500 text-sm flex justify-center items-center">{error}</p>}
         </form>
         <div className="flex justify-center items-center mt-4">
           <p className="text-sm text-gray-800">Already a Student?</p>

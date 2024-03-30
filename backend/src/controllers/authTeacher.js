@@ -6,20 +6,21 @@ const crypto = require('crypto');
 const SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 
 exports.registerTeacher = async (req, res) => {
-  const { name, contact, subject, password } = req.body;
+  const { username, name, contact, subject, password } = req.body;
 
-  console.log(name);
+  console.log(username);
 
   try {
-    let user = await Teacher.findOne({ name });
+    let user = await Teacher.findOne({ username });
 
     if (user) {
-      return res.status(400).json({ message: 'Name already exists' });
+      return res.status(400).json({ message: 'Username already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     user = new Teacher({
+      username,
       name,
       contact,
       subject,
@@ -28,11 +29,7 @@ exports.registerTeacher = async (req, res) => {
 
     await user.save();
 
-    const token = await user.generateToken();
-
-    res.status(201).json({ message: 'User registered successfully' , token: token , userId: user._id.toString()});
-
-    console.log(token);
+    res.status(201).json({ message: 'User registered successfully' });
 
 
   } catch (error) {
@@ -42,10 +39,10 @@ exports.registerTeacher = async (req, res) => {
 };
 
 exports.loginTeacher = async (req, res) => {
-  const { name, password } = req.body;
+  const { username, password } = req.body;
 
   try {
-    const teacher = await Teacher.findOne({ name });
+    const teacher = await Teacher.findOne({username });
 
     if (!teacher) {
       return res.status(404).json({ error: 'Teacher not found' });
@@ -56,11 +53,9 @@ exports.loginTeacher = async (req, res) => {
       return res.status(401).json({ error: 'Invalid password' });
     }
 
-    const token = await teacher.generateToken();
+     const token = jwt.sign({ userId: teacher._id }, SECRET);
     res.status(200).json({ token });
-
     console.log("login done");
-    console.log(token);
 
   } catch (error) {
     console.error('Error during login:', error.message);
@@ -68,85 +63,12 @@ exports.loginTeacher = async (req, res) => {
   }
 };
 
-exports.requireAuth = (req, res, next) => {
-  const token = req.headers.authorization;
-
-  if (!token) {
-    return res.status(401).json({ message: 'Unauthorized: Missing token' });
-  }
-
-  const tokenString = token.split(' ')[1]; 
-  console.log("Token: ", tokenString);
-
-  console.log(SECRET);
-
-  jwt.verify(tokenString, SECRET, (err, decodedToken) => {
-    if (err) {
-      console.error('JWT Verification Error:', err);
-      return res.status(401).json({ message: 'Unauthorized: Invalid token' });
-    }
-
-    console.log("Decoded Token: ", decodedToken);
-    req.userId = decodedToken.userId;
-    next();
-  });
-};
-
-
-// exports.requireAuth = (req, res, next) => {
-//   const token = req.headers.authorization;
-
-//   console.log("hi");
-//   console.log(token);
-
-//   if (!token) {
-//       return res.status(401).json({ message: 'Unauthorized' });
-//   }
-
-//   console.log("token");
-//   console.log(token);
-
-//   console.log(req.headers.authorization);
-
-//   jwt.verify(token, SECRET, (err, decodedToken) => {
-//       if (err) {
-//           return res.status(401).json({ message: 'Invalid token' });
-//       }
-
-//       req.userId = decodedToken.userId;
-//       next();
-//   });
-// };
-
-
 exports.profileTeacher = async (req, res) => {
   try {
-    const token = req.headers.authorization;
-
-    if (!token) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    console.log("token2");
-    console.log(token);
-
-    jwt.verify(token, SECRET, async (err, decodedToken) => {
-      if (err) {
-        return res.status(401).json({ message: 'Invalid token' });
-      }
-
-      const user = await Teacher.findById(decodedToken.userId);
-
-      console.log(user);
-
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-
-      res.json({ user: { name: user.name, subject: user.subject } });
-    });
-  } catch (error) {
-    console.error('Error fetching user profile:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    const profile = await Teacher.findOne({ username: req.params.username });
+    console.log(profile);
+    res.json(profile);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

@@ -5,11 +5,14 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 
 const Page = () => {
+  const [username, setUsername] = useState('');
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [subject, setSubject] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
+
+  const [error, setError] = useState(null);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -20,25 +23,21 @@ const Page = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, contact, subject, password }),
+        body: JSON.stringify({ username, name, contact, subject, password }),
       });
 
       if (response.ok) {
         console.log('Registration successful');
-
-        const data = await response.json();
-
-        console.log(data);
-        const token = data.token;
-
-        Cookies.set('token', token);
+        localStorage.setItem('username', username);
         router.push('/teacher');
       } else {
         const data = await response.json();
         console.error('Registration failed:', data.error || 'Unknown error');
+        setError(data.error || 'Unknown error');
       }
     } catch (error) {
       console.error('Error during registration:', error.message || 'Unknown error');
+      setError(error.message || 'Unknown error');
     }
   };
 
@@ -47,6 +46,19 @@ const Page = () => {
       <div className="max-w-md w-full p-8 bg-white rounded-md shadow-lg">
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">🌟 Register</h2>
         <form className="space-y-4">
+        <div>
+            <label htmlFor="username" className="block text-sm font-semibold text-gray-800">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full p-3 border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 transition duration-300"
+              placeholder="Enter your Username"
+            />
+          </div>
           <div>
             <label htmlFor="name" className="block text-sm font-semibold text-gray-800">
               Name
@@ -106,6 +118,7 @@ const Page = () => {
           >
             Register
           </button>
+          {error && <p className="text-red-500 text-sm flex justify-center items-center">{error}</p>}
         </form>
         <div className="flex justify-center items-center mt-4">
           <p className="text-sm text-gray-800">Already a teacher?</p>

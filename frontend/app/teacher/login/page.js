@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 
 const page = () => {
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const router = useRouter();
@@ -18,17 +18,12 @@ const page = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({name, password})
+        body: JSON.stringify({username, password})
       });
 
       if (response.ok) {
         console.log('Login successful');
-        const data = await response.json();
-        const token = data.token;
-        Cookies.set('token', token);
-
-        console.log(token);
-
+        localStorage.setItem('username', username);
         router.push('/teacher');
       } else {
         const data = await response.json();
@@ -46,16 +41,16 @@ const page = () => {
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Login</h2>
         <form className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-semibold text-gray-800">
-              Name
+            <label htmlFor="username" className="block text-sm font-semibold text-gray-800">
+              Username
             </label>
             <input
               type="text"
-              id="name"
+              id="username"
               className="w-full p-3 border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 transition duration-300"
-              placeholder="Enter your Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div>

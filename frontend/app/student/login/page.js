@@ -21,6 +21,7 @@ const LoginPage = () => {
 
       if (response.ok) {
         console.log('Login successful');
+        localStorage.setItem('rollnumber', rollnumber);
         router.push('/student');
       } else {
         const data = await response.json();

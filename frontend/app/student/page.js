@@ -1,7 +1,36 @@
 "use client";
 import { Bar } from "react-chartjs-2";
 import Chart from "chart.js/auto";
+import { useState , useEffect } from "react";
+import {useRouter} from "next/navigation";
 const page = () => {
+
+  const router = useRouter();
+  const [user, setUser] = useState(null);
+  const rollnumber = localStorage.getItem('rollnumber');
+
+    useEffect(() => {
+
+        const fetchUser = async () => {
+            try {
+                const res = await fetch(`http://localhost:8080/api/v1/student/${rollnumber}`, {
+                    method: 'GET',
+                });
+
+                console.log(res);
+
+                if (res.ok) {
+                    const data = await res.json();
+                    console.log("data:", data);
+                    setUser(data);
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
     const data = {
       labels: ["English", "Maths", "Physics", "Chemistry", "Computer", "Hindi", "Biology"],
@@ -37,24 +66,45 @@ const page = () => {
         maintainAspectRatio: true,
       };
 
+      if(!localStorage.getItem('rollnumber')){
+        router.push('/404');
+      }
+
   
     return (
-    <div className="flex justify-center items-center min-h-screen bg-blue-500 font-sans">
-  <div className="bg-white shadow-lg rounded-lg p-8">
+  <div className="flex justify-center items-center min-h-screen bg-blue-500 font-sans flex-col">
+  {user ? (
+    <div className="mb-6 text-center text-white">
+    <div className="bg-gray-800 text-white p-4 rounded-lg flex flex-col justify-center items-center align-top">
+      <p className="text-lg"><strong>Name:</strong> {user.name}</p>
+      <p className="text-lg"><strong>Roll Number:</strong> {user.rollnumber}</p>
+      <p className="text-lg"><strong>Class:</strong> {user.studentClass}</p>
+    </div>
+  </div>
+  ) : (
+    <div className="mb-6 text-center text-white">Loading...</div>
+  )}
+
+  <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-3xl">
     <h1 className="text-4xl font-bold text-center text-gray-900 mb-6 underline uppercase">Attendance Overview</h1>
     <p className="text-lg font-semibold text-center text-gray-700 mb-6">Overall Attendance: {averageAttendance}%</p>
     <div className="bg-gray-200 rounded-lg p-6">
-      <Bar
-        data={data}
-        height={300}
-        width={500}
-        options={options}
-      />
+      <div className="aspect-w-16 aspect-h-9">
+        <Bar
+          data={data} // Assuming 'data' is defined elsewhere
+          height={300}
+          width={500}
+          options={options} // Assuming 'options' is defined elsewhere
+        />
+      </div>
     </div>
   </div>
-  </div>
+</div>
+
       );
     };
+
+
     export default page;
 
 
