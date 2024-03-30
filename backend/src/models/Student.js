@@ -16,6 +16,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  totalPresent: {
+    type: Number,
+    default: 0,
+  },
+  totalClasses: {
+    type: Number,
+    default: 0,
+  },
   password: {
     type: String,
     required: true

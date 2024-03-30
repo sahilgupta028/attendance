@@ -65,3 +65,52 @@ exports.profileStudent = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.allStudent = async (req, res) => {
+  try {
+    const students = await Student.find();
+    res.json(students);
+  } catch (error) {
+    console.error('Error fetching students:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+exports.presentStudent = async (req, res) => {
+  try {
+    const { rollnumber } = req.params;
+    const student = await Student.findOne({ rollnumber });
+    student.totalPresent += 1;
+    student.totalClasses += 1;
+    await student.save();
+    res.json(student);
+  } catch (error) {
+    console.error('Error marking student present:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+exports.absentStudent = async (req, res) => {
+  try {
+    const { rollnumber } = req.params;
+    const student = await Student.findOne({ rollnumber });
+    student.totalClasses += 1;
+    await student.save();
+    res.json(student);
+  } catch (error) {
+    console.error('Error marking student absent:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+exports.students = async (req, res) => {
+  try {
+    const { name, totalPresent, totalClasses } = req.body;
+    const student = new Student({ name, totalPresent, totalClasses });
+    await student.save();
+    res.status(201).json(student);
+  } catch (error) {
+    console.error('Error adding new student:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
