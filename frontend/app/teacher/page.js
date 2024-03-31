@@ -7,6 +7,7 @@ const TeacherPage = () => {
   const [user, setUser] = useState(null);
   const [students, setStudents] = useState([]);
   const username = localStorage.getItem('username');
+  const verificationSuccess = localStorage.getItem('verificationSuccess');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -110,6 +111,8 @@ const TeacherPage = () => {
 
   return (
     <div className='bg-blue-500 min-h-screen p-3'>
+      {console.log(verificationSuccess)}
+      { verificationSuccess ?  (
       <div className="max-w-5xl mx-auto p-8 bg-white rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-8 text-center">Student Attendance Manager</h1>
         {user ? (
@@ -153,8 +156,12 @@ const TeacherPage = () => {
           </tbody>
         </table>
       </div>
+      ) : (
+        router.push('/404')
+      )}
     </div>
   );
 };
 
 export default TeacherPage;
+

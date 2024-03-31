@@ -15,5 +15,6 @@ router.get('/teacher/:username',  authTeacher.profileTeacher);
 router.get('/students', authStudent.allStudent);
 router.put('/students/:rollnumber/mark-present',authStudent.presentStudent);
 router.put('/students/:rollnumber/mark-absent', authStudent.absentStudent);
+router.post('/verify', authTeacher.verifyTeacher);
 
 module.exports = router;

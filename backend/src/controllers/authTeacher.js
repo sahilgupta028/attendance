@@ -19,10 +19,13 @@ exports.registerTeacher = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const verificationCode = Math.floor(100000 + Math.random() * 900000);
+
     user = new Teacher({
       username,
       name,
       contact,
+      verificationCode,
       subject,
       password : hashedPassword
     });
@@ -70,5 +73,26 @@ exports.profileTeacher = async (req, res) => {
     res.json(profile);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+exports.verifyTeacher = async (req, res) => {
+  const { verificationCode } = req.body;
+
+  try {
+    // Assuming you have a verificationCode field in your Teacher model
+    const teacher = await Teacher.findOne({ verificationCode });
+
+    if (!teacher) {
+      return res.status(404).json({ error: 'Verification failed' });
+    }
+
+    // Update teacher's verification status in the database or any other necessary action
+
+    // Respond with success message
+    res.status(200).json({ message: 'Verification successful' });
+  } catch (error) {
+    console.error('Error verifying code:', error);
+    res.status(500).json({ error: 'Server error' });
   }
 };

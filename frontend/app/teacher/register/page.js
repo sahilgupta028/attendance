@@ -29,7 +29,7 @@ const Page = () => {
       if (response.ok) {
         console.log('Registration successful');
         localStorage.setItem('username', username);
-        router.push('/teacher');
+        router.push('/teacher/verify');
       } else {
         const data = await response.json();
         console.error('Registration failed:', data.error || 'Unknown error');

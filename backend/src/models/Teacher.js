@@ -10,11 +10,13 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true
   },
   contact: {
     type: String,
     required: true
+  },
+  verificationCode: {
+    type: String,
   },
   subject: {
     type: String,

@@ -24,7 +24,7 @@ const page = () => {
       if (response.ok) {
         console.log('Login successful');
         localStorage.setItem('username', username);
-        router.push('/teacher');
+        router.push('/teacher/verify');
       } else {
         const data = await response.json();
         setError(data.error || 'Unknown error');
