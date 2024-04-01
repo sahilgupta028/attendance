@@ -59,7 +59,7 @@ const TeacherPage = () => {
             ...student,
             totalPresent: student.totalPresent + 1,
             totalClasses: student.totalClasses + 1,
-            lastSeen: new Date(student.lastAttendance).toLocaleString(),
+            lastSeen: new Date().toLocaleString(),
           };
         }
         return student;
