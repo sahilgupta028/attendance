@@ -82,6 +82,7 @@ exports.presentStudent = async (req, res) => {
     const student = await Student.findOne({ rollnumber });
     student.totalPresent += 1;
     student.totalClasses += 1;
+    student.lastSeen = new Date();
     await student.save();
     res.json(student);
   } catch (error) {

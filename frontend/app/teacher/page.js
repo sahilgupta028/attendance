@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Navbar from '../components/Navbar';
 
 const TeacherPage = () => {
   const router = useRouter();
@@ -28,7 +29,8 @@ const TeacherPage = () => {
         });
         if (studentsDataResponse.ok) {
           const studentsData = await studentsDataResponse.json();
-          setStudents(studentsData);
+          const sortedStudent = studentsData.sort((a , b) => a.rollnumber-b.rollnumber);
+          setStudents(sortedStudent);
         } else {
           throw new Error('Failed to fetch students data');
         }
@@ -57,6 +59,7 @@ const TeacherPage = () => {
             ...student,
             totalPresent: student.totalPresent + 1,
             totalClasses: student.totalClasses + 1,
+            lastSeen: new Date(student.lastAttendance).toLocaleString(),
           };
         }
         return student;
@@ -77,12 +80,11 @@ const TeacherPage = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`, // Assuming you have a token for authentication
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({ present: false }),
       });
       if (response.ok) {
-        // Update students state if successful
         const updatedStudents = students.map(student => {
           if (student.rollnumber === studentId) {
             return {
@@ -110,10 +112,12 @@ const TeacherPage = () => {
   };
 
   return (
+    <div>
+    <Navbar name={user ? user.name : ""} />
     <div className='bg-blue-500 min-h-screen p-3'>
       {console.log(verificationSuccess)}
       { verificationSuccess ?  (
-      <div className="max-w-5xl mx-auto p-8 bg-white rounded-lg shadow-md">
+      <div className="min-w-5xl mx-auto p-8 bg-white rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-8 text-center">Student Attendance Manager</h1>
         {user ? (
           <div className="mb-6">
@@ -133,6 +137,7 @@ const TeacherPage = () => {
               <th className="border border-gray-300 px-4 py-2">Total Absent</th>
               <th className="border border-gray-300 px-4 py-2">Total Classes</th>
               <th className="border border-gray-300 px-4 py-2">Percentage</th>
+              <th className="border border-gray-300 px-4 py-2">Last Seen</th>
               <th className="border border-gray-300 px-4 py-2">Actions</th>
               <th className="border border-gray-300 px-4 py-2">Detained</th>
             </tr>
@@ -140,25 +145,31 @@ const TeacherPage = () => {
           <tbody>
             {students.map((student, index) => (
               <tr key={index}>
-                <td className="border border-gray-300 px-4 py-2">{student.rollnumber}</td>
-                <td className="border border-gray-300 px-4 py-2">{student.name}</td>
-                <td className="border border-gray-300 px-4 py-2">{student.totalPresent}</td>
-                <td className="border border-gray-300 px-4 py-2">{calculateAbsent(student.totalPresent, student.totalClasses)}</td>
-                <td className="border border-gray-300 px-4 py-2">{student.totalClasses}</td>
-                <td className="border border-gray-300 px-4 py-2">{calculatePercentage(student.totalPresent, student.totalClasses)}%</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{student.rollnumber}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center min-w-52">{student.name}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{student.totalPresent}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{calculateAbsent(student.totalPresent, student.totalClasses)}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{student.totalClasses}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{calculatePercentage(student.totalPresent, student.totalClasses)}%</td>
+                <td className="border border-gray-300 px-4 py-2 text-center min-w-64">{new Date(student.lastSeen).toLocaleDateString()}</td>
                 <td className="border border-gray-300 px-4 py-2 flex items-center">
                   <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded m-2" onClick={() => markPresent(student.rollnumber)}>Present</button>
                   <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded" onClick={() => markAbsent(student.rollnumber)}>Absent</button>
                 </td>
-                <td className="border border-gray-300 px-4 py-2">{calculatePercentage(student.totalPresent, student.totalClasses) < 75 ? <span className="text-green-500 mr-2 flex items-center justify-center text-xl">✔</span> : <span className="text-red-500 mr-2 flex items-center justify-center">❌</span>}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{calculatePercentage(student.totalPresent, student.totalClasses) < 75 ? <span className="text-green-500 mr-2 flex items-center justify-center text-xl">✔</span> : <span className="text-red-500 mr-2 flex items-center justify-center">❌</span>}</td>
               </tr>
             ))}
           </tbody>
         </table>
+        <div className='flex items-center text-center justify-center '>
+        <button className='bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded m-6' onClick={() => router.push('/student/register')}>Add Student</button>
+        <button className='bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded m-6' onClick={() => window.print()}>Print</button>
+        </div>
       </div>
       ) : (
         router.push('/404')
       )}
+    </div>
     </div>
   );
 };

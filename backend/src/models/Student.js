@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  lastSeen: {
+    type: String,
+  },
   password: {
     type: String,
     required: true

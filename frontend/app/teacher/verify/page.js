@@ -6,6 +6,7 @@ const Page = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationSuccess, setVerificationSuccess] = useState(false);
   const router = useRouter();
+  const [error, setError] = useState(null);
 
   const handleVerification = async () => {
     try {
@@ -23,10 +24,12 @@ const Page = () => {
         localStorage.setItem('verificationSuccess', verificationSuccess);
         router.push('/teacher');
       } else {
-        throw new Error('Verification failed');
+        console.error('Verification failed');
+        setError('Verification failed')
       }
     } catch (error) {
       console.error('Error verifying code:', error);
+      setError(error);
     }
   };
 
@@ -49,6 +52,7 @@ const Page = () => {
             Verify
           </button>
         </div>
+        {error && <p className="text-red-500 text-sm flex justify-center items-center">{error}</p>}
       </div>
     </div>
   );
